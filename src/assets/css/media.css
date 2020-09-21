@@ -1,0 +1,81 @@
+/* 块颜色 */
+.hande-table .bg-purple-dark {
+  background: #99a9bf;
+}
+.hande-table .bg-purple {
+  background: #d3dce6;
+}
+.hande-table .bg-purple-light {
+  background: #e5e9f2;
+}
+.hande-table .bg-gray-light {
+  background: #efefef;
+}
+.hande-table .bg-blue {
+  background: #2e8af1;
+}
+.hande-table .bg-green {
+  background: #6bb61e;
+}
+.hande-table .bg-red-dark {
+  background: #be1c4b;
+}
+.hande-table .bg-green-dark {
+  background: #02a41d;
+}
+.hande-table .bg-purple-gray {
+  background: #603cba;
+}
+.hande-table .bg-orange {
+  background: #dd552f;
+}
+.hande-table .bg-black {
+  background: #555555;
+}
+.hande-table .bg-yellow {
+  background: #ffda68;
+}
+.hande-table .bg-red-add {
+  background: #b14a5f;
+}
+.hande-table .bg-blue-add {
+  background: #2577e3;
+}
+.hande-table .bg-green-disc {
+  background: #61e24e;
+}
+.hande-table .bg-blue-sky {
+  background: #63bbd3;
+}
+.hande-table .bg-pink {
+  background: #f26a50;
+}
+
+@media screen and (max-width: 1680px) {
+  .hande-table .grid-content i.el-icon-plus {
+    font-size: 54px;
+  }
+  .hande-table .grid-content i {
+    font-size: 26px;
+  }
+  /*.hande-table .grid-content i.el-icon-user {*/
+  /*  font-size: 26px;*/
+  /*}*/
+  /*.hande-table .grid-content i.el-icon-circle-plus {*/
+  /*  font-size: 26px;*/
+  /*}*/
+}
+@media screen and (max-width: 1280px) {
+  .hande-table .grid-content i.el-icon-plus {
+    font-size: 42px;
+  }
+  .hande-table .grid-content i {
+    font-size: 20px;
+  }
+  /*.hande-table .grid-content i.el-icon-user {*/
+  /*  font-size: 20px;*/
+  /*}*/
+  /*.hande-table .grid-content i.el-icon-circle-plus {*/
+  /*  font-size: 20px;*/
+  /*}*/
+}

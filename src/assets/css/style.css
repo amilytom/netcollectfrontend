@@ -1,0 +1,213 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+html,
+body {
+  font-size: 14px;
+  font-family: "Microsoft Yahei", Arial, Helvetica, sans-serif;
+}
+div,
+p,
+span,
+input,
+button {
+  margin: 0px;
+  padding: 0px;
+}
+ul,
+li,
+dl,
+dt,
+dd {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+a {
+  text-decoration: none;
+  margin: 0px;
+  padding: 0px;
+}
+a:focus,
+a:active,
+a:hover {
+  outline: none;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  transition: all 0.3s;
+}
+#app {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.container {
+  width: 100%;
+  margin: 0 auto;
+}
+.handle-head {
+  margin: auto;
+  padding-top: 12px;
+  position: relative;
+  padding-left: 14px;
+  padding-right: 14px;
+  overflow: hidden;
+  clear: both;
+}
+.headleft {
+  float: left;
+  display: block;
+  height: 20px;
+  line-height: 20px;
+}
+.headleft i {
+  font-size: 20px;
+  color: #333333;
+  display: block;
+  float: left;
+  cursor: pointer;
+}
+.headleft i + i {
+  display: block;
+  border-left: 1px solid #dcdbdb;
+  padding-left: 12px;
+  height: 18px;
+  margin-left: 12px;
+}
+.headright {
+  float: right;
+  display: block;
+  height: 20px;
+  line-height: 20px;
+}
+.headright i.el-icon-s-custom {
+  font-size: 19px;
+  color: #333333;
+  display: block;
+  float: left;
+  cursor: pointer;
+  margin-right: 4px;
+}
+.headright .el-dropdown-link {
+  font-size: 14px;
+  cursor: pointer;
+}
+.handle-box {
+  width: 720px;
+  margin: 20px auto;
+  clear: both;
+  overflow: hidden;
+}
+.handle-box .handle-input {
+  width: 480px;
+  display: block;
+  float: left;
+}
+.handle-box /deep/ .el-input__inner {
+  height: 44px;
+  line-height: 44px;
+}
+.handle-box .el-button {
+  margin-left: 6px;
+  width: 114px;
+  float: left;
+  height: 44px;
+}
+.handle-tabs {
+  width: 64%;
+  margin: 30px auto;
+  clear: both;
+  overflow: hidden;
+}
+
+.hande-table {
+  width: 64%;
+  margin: 50px auto;
+  clear: both;
+}
+.hande-table .el-col {
+  border-radius: 4px;
+  margin-top: 14px;
+  margin-bottom: 14px;
+  width: 25%;
+}
+.hande-table .grid-content {
+  height: 0px;
+  padding-bottom: 58%;
+  border-radius: 4px;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  -webkit-transition: -webkit-transform ease 150ms, box-shadow ease 200ms,
+    z-index ease 150ms;
+}
+.hande-table .grid-content i {
+  display: block;
+  font-size: 32px;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  cursor: pointer;
+}
+.hande-table .grid-content p {
+  display: block;
+  font-size: 32px;
+  color: #ffffff;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  cursor: pointer;
+}
+.hande-table .grid-content i.el-icon-plus {
+  font-size: 64px;
+  font-weight: bold;
+  color: #c0c0c0;
+}
+.hande-table .grid-content i.el-icon-user {
+  color: #fff;
+}
+.hande-table .grid-content i.el-icon-circle-plus {
+  color: #fff;
+}
+.hande-table .grid-content i.el-icon-plus:hover {
+  color: #00ff00;
+}
+.hande-table .grid-content i.el-icon-user:hover {
+  color: #f0ff00;
+}
+.hande-table .grid-content i.el-icon-circle-plus:hover {
+  color: #f0ff00;
+}
+
+/* dialog弹窗css */
+.dialog-box {
+  margin: 0 auto;
+}
+.box-modal {
+  width: 480px;
+  margin: 0 auto;
+}
+.dialog-box .el-dialog {
+  border-radius: 8px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 0 !important;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-height: calc(100% - 30px);
+  max-width: calc(100% - 30px);
+}
+.dialog-box .el-dialog .el-dialog__body {
+  flex: 1;
+  overflow: auto;
+}
+.dialog-box .loginbut .el-button {
+  width: 100%;
+}
