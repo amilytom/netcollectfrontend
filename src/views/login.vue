@@ -6,7 +6,6 @@
         placeholder="请输入搜索内容"
         class="handle-input"
         @clear="queryClear"
-        @blur="queryClear"
         clearable
       ></el-input>
       <el-button type="primary" icon="search" @click="searchKey"
@@ -161,15 +160,7 @@ export default {
 .handle-box {
   margin: 90px auto 80px;
 }
-.handle-box .handle-input {
-  width: 560px;
-  display: block;
-  float: left;
-}
-.handle-box .el-button {
-  margin-left: 6px;
-  width: 154px;
-  float: left;
-  height: 44px;
+.hande-table .grid-content p {
+  font-size: 32px;
 }
 </style>

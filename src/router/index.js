@@ -23,7 +23,7 @@ const router = new Router({
     {
       path: "/404",
       name: "Error",
-      component: () => import("../components/404"),
+      component: () => import("../error/404"),
       meta: { title: "404页面" },
     },
     {

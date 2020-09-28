@@ -1,24 +1,6 @@
 <template>
   <div class="container">
-    <div class="handle-head">
-      <div class="headleft">
-        <i class="el-icon-s-home"></i>
-        <i class="el-icon-menu"></i>
-      </div>
-      <div class="headright">
-        <i class="el-icon-s-custom"></i>
-        <el-dropdown @command="userOperation">
-          <span class="el-dropdown-link">
-            {{ username }}<i class="el-icon-arrow-down el-icon--right"></i>
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="editPwd">修改密码</el-dropdown-item>
-            <el-dropdown-item command="logout">退出登录</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-    </div>
-
+    <head-top ref="headtop"></head-top>
     <!--  搜索框 -->
     <div class="handle-box">
       <el-input
@@ -26,207 +8,178 @@
         placeholder="请输入搜索内容"
         class="handle-input"
         @clear="queryClear"
-        @blur="queryClear"
         clearable
       ></el-input>
       <el-button type="primary" icon="search" @click="searchKey"
         >搜索</el-button
       >
-      <el-button type="success" icon="search" @click="handleAdd"
-        >添加
-      </el-button>
     </div>
 
     <!--  分类标题 -->
     <div class="handle-tabs">
       <el-tabs
-        v-model="editableTabsValue"
+        v-model="currentTabsValue"
         type="card"
         editable
-        @edit="handleTabsEdit"
+        @tab-click="handleTab"
+        @tab-add="handleAdd"
       >
         <el-tab-pane
-          :key="item.name"
+          :key="index"
           v-for="(item, index) in editableTabs"
-          :label="item.title"
-          :name="item.name"
+          :label="item.name"
+          :name="JSON.stringify(item.cid)"
         >
-          {{ item.content }}
         </el-tab-pane>
       </el-tabs>
     </div>
 
-    <!-- 显示内容 -->
-    <div class="hande-table">
-      <el-row :gutter="30">
-        <el-col :span="6">
-          <div class="grid-content bg-gray-light" @click="addLink">
-            <i class="el-icon-plus"></i>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="grid-content bg-gray-light" @click="addLink">
-            <i class="el-icon-plus"></i>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="grid-content bg-gray-light" @click="addLink">
-            <i class="el-icon-plus"></i>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="grid-content bg-gray-light" @click="addLink">
-            <i class="el-icon-plus"></i>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="grid-content bg-gray-light" @click="addLink">
-            <i class="el-icon-plus"></i>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="grid-content bg-gray-light" @click="addLink">
-            <i class="el-icon-plus"></i>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="grid-content bg-gray-light" @click="addLink">
-            <i class="el-icon-plus"></i>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="grid-content bg-gray-light" @click="addLink">
-            <i class="el-icon-plus"></i>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="grid-content bg-gray-light" @click="addLink">
-            <i class="el-icon-plus"></i>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="grid-content bg-gray-light" @click="addLink">
-            <i class="el-icon-plus"></i>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="grid-content bg-gray-light" @click="addLink">
-            <i class="el-icon-plus"></i>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="grid-content bg-gray-light" @click="addLink">
-            <i class="el-icon-plus"></i>
-          </div>
-        </el-col>
-      </el-row>
-    </div>
+    <content-view ref="contentView"></content-view>
 
-    <!-- 修改密码 -->
-    <pass-dialog ref="passDialog"></pass-dialog>
+    <el-drawer
+      ref="cateDrewer"
+      title="分类管理"
+      size="360px"
+      :visible.sync="drawer"
+      :direction="direction"
+      :with-header="false"
+    >
+      <cate-tree ref="cateTreeCom"></cate-tree>
+    </el-drawer>
+
+    <!-- 新增或编辑分类框 -->
+    <cate-dialog ref="cateDialog" @submit-success="submitSuccess"></cate-dialog>
   </div>
 </template>
 
 <script>
-import Cookie from "js-cookie";
-import passDialog from "../components/passDialog";
+import Cookies from "js-cookie";
+import contentView from "./content";
+import cateTree from "./catetree";
+import cateDialog from "../components/cateDialog";
+import headTop from "../components/headtop";
+import cateApi from "../api/cateApi";
+import linkApi from "../api/linkApi";
+import bus from "../utils/bus";
 
 export default {
-  name: "login",
+  name: "indexPage",
   components: {
-    passDialog,
+    contentView,
+    cateTree,
+    cateDialog,
+    headTop,
   },
   data() {
     return {
-      title: this.$route.meta.title,
-      username: Cookie.get("username"),
       searchName: "",
       tableData: [],
       curPage: 1,
       rows: 12,
-      editableTabsValue: "2",
-      editableTabs: [
-        {
-          title: "Tab 1",
-          name: "1",
-          content: "Tab 1 content",
-        },
-        {
-          title: "Tab 2",
-          name: "2",
-          content: "Tab 2 content",
-        },
-      ],
-      tabIndex: 2,
+      currentTabsValue: "",
+      editableTabs: [],
+      linkListData: [],
+      drawer: false,
+      direction: "ltr",
+      uid: JSON.parse(Cookies.get("userInfo")).uid,
     };
   },
   computed: {},
-  mounted() {},
+  created() {
+    this.getTypeData();
+    this.$nextTick(() => {
+      console.log(this.$refs.cateDrewer);
+    });
+  },
   methods: {
-    userOperation(command) {
-      switch (command) {
-        case "logout":
-          this.logout();
-          break;
-        case "editPwd":
-          this.editPass();
-          break;
-      }
-    },
-    logout() {
-      this.$store
-        .dispatch("logout")
-        .then(() => {
-          this.$message.success("退出登录");
-          this.$router.push({ path: "/login" });
+    getTypeData() {
+      let params = {
+        dropList: true,
+        uid: this.uid,
+        isgood: 1,
+      };
+      cateApi
+        .cateList(params)
+        .then((res) => {
+          //console.log(res);
+          this.editableTabs = res.data.list;
+          this.currentTabsValue = JSON.stringify(this.editableTabs[0].cid);
+          let params = {
+            page: this.curPage,
+            rows: this.rows,
+            cat: this.editableTabs[0].cid,
+          };
+          linkApi
+            .linkList(params)
+            .then((res) => {
+              this.linkListData = res.data.list;
+              console.log(this.linkListData);
+              bus.$emit("getLinkData", this.linkListData);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    editPass() {
-      this.$refs.passDialog.open();
+    getLinkList() {
+      let params = {
+        page: this.curPage,
+        rows: this.rows,
+        title: this.searchName,
+      };
+      linkApi
+        .linkList(params)
+        .then((res) => {
+          this.linkListData = res.data.list;
+          console.log(this.linkListData);
+          bus.$emit("getLinkData", this.linkListData);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
-    getData(search) {},
     queryClear() {
       this.curPage = 1; // 重置页数
-      this.getData();
+      this.getLinkList();
     },
     searchKey() {
       this.curPage = 1;
-      this.getData(true);
+      this.getLinkList();
     },
-    addLink() {
-      this.$message.warning("请先登录");
-    },
-    handleAdd() {},
-    handleTabsEdit(targetName, action) {
-      if (action === "add") {
-        let newTabName = ++this.tabIndex + "";
-        this.editableTabs.push({
-          title: "New Tab",
-          name: newTabName,
-          content: "New Tab content",
+    handleTab(vm) {
+      console.log(vm);
+      let params = {
+        page: this.curPage,
+        rows: this.rows,
+        cat: JSON.parse(vm.name),
+      };
+      linkApi
+        .linkList(params)
+        .then((res) => {
+          this.linkListData = res.data.list;
+          console.log(this.linkListData);
+          bus.$emit("getLinkData", this.linkListData);
+        })
+        .catch((err) => {
+          console.log(err);
         });
-        this.editableTabsValue = newTabName;
-      }
-      if (action === "remove") {
-        let tabs = this.editableTabs;
-        let activeName = this.editableTabsValue;
-        if (activeName === targetName) {
-          tabs.forEach((tab, index) => {
-            if (tab.name === targetName) {
-              let nextTab = tabs[index + 1] || tabs[index - 1];
-              if (nextTab) {
-                activeName = nextTab.name;
-              }
-            }
-          });
-        }
-
-        this.editableTabsValue = activeName;
-        this.editableTabs = tabs.filter((tab) => tab.name !== targetName);
-      }
+    },
+    handleAdd() {
+      this.$refs.cateDialog.open(false);
+    },
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then((_) => {
+          done();
+        })
+        .catch((_) => {});
+    },
+    submitSuccess() {
+      this.$children[5].$children[0].getCateData();
+      //this.getCateData();
     },
   },
 };
