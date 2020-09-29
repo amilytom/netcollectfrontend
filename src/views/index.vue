@@ -15,26 +15,7 @@
       >
     </div>
 
-    <!--  分类标题 -->
-    <div class="handle-tabs">
-      <el-tabs
-        v-model="currentTabsValue"
-        type="card"
-        editable
-        @tab-click="handleTab"
-        @tab-add="handleAdd"
-      >
-        <el-tab-pane
-          :key="index"
-          v-for="(item, index) in editableTabs"
-          :label="item.name"
-          :name="JSON.stringify(item.cid)"
-        >
-        </el-tab-pane>
-      </el-tabs>
-    </div>
-
-    <content-view ref="contentView"></content-view>
+    <content-view ref="contentView" :searchName="searchName"></content-view>
 
     <el-drawer
       ref="cateDrewer"
@@ -53,13 +34,10 @@
 </template>
 
 <script>
-import Cookies from "js-cookie";
 import contentView from "./content";
 import cateTree from "./catetree";
 import cateDialog from "../components/cateDialog";
 import headTop from "../components/headtop";
-import cateApi from "../api/cateApi";
-import linkApi from "../api/linkApi";
 import bus from "../utils/bus";
 
 export default {
@@ -73,113 +51,22 @@ export default {
   data() {
     return {
       searchName: "",
-      tableData: [],
-      curPage: 1,
-      rows: 12,
-      currentTabsValue: "",
-      editableTabs: [],
-      linkListData: [],
       drawer: false,
       direction: "ltr",
-      uid: JSON.parse(Cookies.get("userInfo")).uid,
     };
   },
-  computed: {},
-  created() {
-    this.getTypeData();
-    this.$nextTick(() => {
-      console.log(this.$refs.cateDrewer);
-    });
-  },
+  created() {},
   methods: {
-    getTypeData() {
-      let params = {
-        dropList: true,
-        uid: this.uid,
-        isgood: 1,
-      };
-      cateApi
-        .cateList(params)
-        .then((res) => {
-          //console.log(res);
-          this.editableTabs = res.data.list;
-          this.currentTabsValue = JSON.stringify(this.editableTabs[0].cid);
-          let params = {
-            page: this.curPage,
-            rows: this.rows,
-            cat: this.editableTabs[0].cid,
-          };
-          linkApi
-            .linkList(params)
-            .then((res) => {
-              this.linkListData = res.data.list;
-              console.log(this.linkListData);
-              bus.$emit("getLinkData", this.linkListData);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    getLinkList() {
-      let params = {
-        page: this.curPage,
-        rows: this.rows,
-        title: this.searchName,
-      };
-      linkApi
-        .linkList(params)
-        .then((res) => {
-          this.linkListData = res.data.list;
-          console.log(this.linkListData);
-          bus.$emit("getLinkData", this.linkListData);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
     queryClear() {
-      this.curPage = 1; // 重置页数
-      this.getLinkList();
+      this.$refs.contentView.curPage = 1;
+      this.$refs.contentView.getLinkList();
     },
     searchKey() {
-      this.curPage = 1;
-      this.getLinkList();
-    },
-    handleTab(vm) {
-      console.log(vm);
-      let params = {
-        page: this.curPage,
-        rows: this.rows,
-        cat: JSON.parse(vm.name),
-      };
-      linkApi
-        .linkList(params)
-        .then((res) => {
-          this.linkListData = res.data.list;
-          console.log(this.linkListData);
-          bus.$emit("getLinkData", this.linkListData);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    handleAdd() {
-      this.$refs.cateDialog.open(false);
-    },
-    handleClose(done) {
-      this.$confirm("确认关闭？")
-        .then((_) => {
-          done();
-        })
-        .catch((_) => {});
+      this.$refs.contentView.curPage = 1;
+      this.$refs.contentView.getLinkList();
     },
     submitSuccess() {
-      this.$children[5].$children[0].getCateData();
-      //this.getCateData();
+      bus.$emit("updataCate");
     },
   },
 };

@@ -1,7 +1,7 @@
 <template>
   <div class="dialog-box">
     <el-dialog
-      :title="isEdit ? '编辑分类' : '新增分类'"
+      :title="isEdit ? '编辑链接' : '新增链接'"
       :close-on-click-modal="false"
       :append-to-body="true"
       :visible.sync="dialogVisible"
@@ -13,17 +13,31 @@
         ref="addForm"
         label-width="80px"
       >
-        <el-form-item label="分类名称" prop="name">
+        <el-form-item label="链接名称" prop="title">
           <el-input
             size="small"
-            v-model.trim="addForm.name"
-            placeholder="请输入分类名称"
+            v-model.trim="addForm.title"
+            placeholder="请输入链接名称"
           ></el-input>
         </el-form-item>
-        <el-form-item label="上级分类" prop="pid">
+        <el-form-item label="链接网址" prop="url">
+          <el-input
+            size="small"
+            v-model.trim="addForm.url"
+            placeholder="请输入链接网址"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="关键词" prop="key">
+          <el-input
+            size="small"
+            v-model.trim="addForm.key"
+            placeholder="请输入关键词"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="所属分类">
           <el-select
             size="small"
-            v-model="addForm.pid"
+            v-model="addForm.cat"
             placeholder="请选择"
             style="width: 100%"
           >
@@ -35,15 +49,15 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="是否推荐" prop="isgood">
+        <el-form-item label="是否置顶" prop="istop">
           <el-select
             size="small"
-            v-model="addForm.isgood"
+            v-model="addForm.istop"
             placeholder="请选择"
             style="width: 100%"
           >
             <el-option
-              v-for="(item, index) in goodList"
+              v-for="(item, index) in topList"
               :key="index"
               :label="item.label"
               :value="item.value"
@@ -65,41 +79,52 @@
 <script>
 import Cookies from "js-cookie";
 import cateApi from "../api/cateApi";
+import linkApi from "../api/linkApi";
 
 export default {
-  name: "addCateDialog",
+  name: "addLinkDialog",
   props: {},
   data() {
     return {
       dialogVisible: false,
       isEdit: false,
       addForm: {
-        name: "",
-        pid: "",
-        isgood: "",
+        title: "",
+        url: "",
+        key: "",
+        cat: "",
+        istop: "",
       },
       addFormRules: {
-        name: [
+        title: [
           {
             required: true,
-            message: "分类名称不能为空",
+            message: "链接标题不能为空",
+            trigger: "blur",
+          },
+        ],
+        url: [
+          {
+            required: true,
+            message: "链接地址不能为空",
             trigger: "blur",
           },
         ],
       },
       uid: JSON.parse(Cookies.get("userInfo")).uid,
       cateList: [],
-      goodList: [
+      topList: [
         {
           value: 0,
           label: "无",
         },
         {
           value: 1,
-          label: "推荐",
+          label: "置顶",
         },
       ],
       btnLoading: false,
+      id: 0,
       cid: 0,
     };
   },
@@ -110,6 +135,7 @@ export default {
     // 打开弹窗，第一个参数是否为编辑，第二参数传入的表单参数
     open(isEdit, rowData = {}) {
       this.isEdit = isEdit;
+      this.cid = rowData.cid;
       this.dialogVisible = true;
       this.$nextTick(() => {
         // 每次打开弹窗执行重置表单方法，为避免首次报错，在弹窗dom加载后才执行
@@ -124,11 +150,13 @@ export default {
     // 编辑状态给表单赋值
     assignmentAddForm(rowData) {
       this.addForm = {
-        name: rowData.name,
-        pid: rowData.pid,
-        isgood: rowData.isgood,
+        title: rowData.title,
+        url: rowData.url,
+        key: rowData.key,
+        cat: rowData.cat,
+        istop: rowData.istop,
       };
-      this.cid = rowData.cid;
+      this.id = rowData.id;
       // 保存编辑时修改前用户对象的值
       this.editUserval = Object.assign({}, this.addForm);
       //console.log(rowData)
@@ -137,7 +165,6 @@ export default {
     getTopCateByPid() {
       let params = {
         dropList: true,
-        pid: 0,
         uid: this.uid,
       };
       cateApi
@@ -149,11 +176,6 @@ export default {
               name: item.name,
               pid: item.pid,
             };
-          });
-          this.cateList.unshift({
-            cid: 0,
-            name: "无上级",
-            pid: 0,
           });
         })
         .catch((err) => {
@@ -178,15 +200,13 @@ export default {
 
     handleAdd() {
       this.btnLoading = true;
-      this.$set(this.addForm, "uid", this.uid);
       let params = this.addForm;
-      console.log(params);
-      cateApi
-        .insertcate(params)
+      linkApi
+        .insertlink(params)
         .then((res) => {
           this.btnLoading = false;
           this.$message.success(`添加成功`);
-          this.$emit("submit-success");
+          this.$emit("submit-success", this.cid);
           this.dialogVisible = false;
         })
         .catch((err) => {
@@ -197,16 +217,15 @@ export default {
     // 编辑用户
     handleEdit() {
       this.btnLoading = true;
-      this.$set(this.addForm, "cid", this.cid);
-      this.$set(this.addForm, "uid", this.uid);
+      this.$set(this.addForm, "id", this.id);
       let params = this.addForm;
 
-      cateApi
-        .editcate(params)
+      linkApi
+        .editlink(params)
         .then((res) => {
           this.btnLoading = false;
           this.$message.success(`修改成功`);
-          this.$emit("submit-success");
+          this.$emit("submit-success", this.cid);
           this.dialogVisible = false;
         })
         .catch((err) => {

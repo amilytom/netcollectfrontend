@@ -188,11 +188,11 @@ a:hover {
 .dialog-box {
   margin: 0 auto;
 }
-.dialog-box .box-modal {
+.box-modal {
   width: 480px;
   margin: 0 auto;
 }
-.dialog-box .el-dialog {
+.box-modal .el-dialog {
   border-radius: 8px;
   width: 100%;
   display: flex;
@@ -205,11 +205,11 @@ a:hover {
   max-height: calc(100% - 30px);
   max-width: calc(100% - 30px);
 }
-.dialog-box .el-dialog .el-dialog__body {
+.box-modal .el-dialog .el-dialog__body {
   flex: 1;
   overflow: auto;
 }
-.dialog-box .loginbut .el-button {
+.box-modal .loginbut .el-button {
   width: 100%;
 }
 
@@ -256,4 +256,8 @@ a:hover {
   width: 60%;
   margin: 0 auto;
   text-align: center;
+}
+.tree-list .treetitle {
+  width: 240px;
+  display: inline-block;
 }
